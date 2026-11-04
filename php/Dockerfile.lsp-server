@@ -1,0 +1,16 @@
+FROM php:8.5-cli
+
+RUN set -x \
+    && apt update \
+    && apt install openssh-server vim iproute2 procps iputils-ping git -y \
+    && rm -rf /var/lib/apt/lists/*
+
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN install-php-extensions ast && install-php-extensions @composer
+
+RUN adduser --disabled-password --gecos "" dev-user
+RUN echo 'dev-user:pass123' | chpasswd
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+
