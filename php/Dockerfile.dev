@@ -1,0 +1,22 @@
+FROM php:7.2-cli
+
+RUN set -x \
+    && sed -i \
+    -e 's|http://deb.debian.org/debian|http://archive.debian.org/debian-archive/debian|g' \
+    -e 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-archive/debian-security|g' \
+    /etc/apt/sources.list \
+    && apt update \
+    && apt install openssh-server vim iproute2 procps iputils-ping git -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir /run/sshd
+
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN install-php-extensions bcmath igbinary memcached mysqli redis zip gd bz2 exif intl mongodb pcntl pdo_mysql rdkafka soap stomp \
+    && install-php-extensions @composer
+
+RUN adduser --disabled-password --gecos "" dev-user
+RUN echo 'dev-user:123456' | chpasswd
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+

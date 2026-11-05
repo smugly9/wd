@@ -8,8 +8,8 @@ RUN set -x \
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN install-php-extensions ast && install-php-extensions @composer
 
-RUN adduser --disabled-password --gecos "" dev-user
-RUN echo 'dev-user:pass123' | chpasswd
+RUN adduser --disabled-password --gecos "" lsp-user
+RUN echo 'lsp-user:123456' | chpasswd
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
